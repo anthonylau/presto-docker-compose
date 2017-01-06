@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+  server:
+    image: bridg/presto-server
+    environment:
+      PRESTO_NODE_ID: test
+      PRESTO_DISCOVERY_URI: "localhost:8080"
+      PRESTO_IS_COORDINATOR: "true"
+      PRESTO_NODE_SCHEDULER_INCLUDE_COORDINATOR: "true"
+      PRESTO_QUERY_MAX_MEMORY_PER_NODE: 500MB
+      PRESTO_CATALOG_MYSQL_CONNECTION_URL: "jdbc:mysql://localhost:3306"
+      PRESTO_CATALOG_MYSQL_CONNECTION_USER: "root"
+      PRESTO_CATALOG_MYSQL_CONNECTION_PASSWORD: "root"
+      PRESTO_CATALOG_HIVE_METASTORE_URI: "thrift://localhost:9083"
+    ports:
+     - "58080:8080"
+    volumes:
+     - ./etc/catalog:/opt/presto-server/etc/catalog
+
+  cli:
+    image: bridg/presto-cli
+    command: presto --server presto-server:8080
+    links:
+      - server:presto-server
+
+
